@@ -1,0 +1,12 @@
+# Credentials — never commit
+.env*
+.vercel/
+
+# Local scratch
+__pycache__/
+*.pyc
+.DS_Store
+
+# Capture / reel workshop, not the exhibition
+/reel/
+/shots/

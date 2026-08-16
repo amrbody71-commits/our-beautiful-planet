@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>World Live Cams — contact sheet</title>
+<style>
+  :root{
+    --bg:#0b0d10; --panel:#14181d; --line:#232a32;
+    --ink:#e8ecf1; --dim:#8b97a5; --accent:#4dd4a0; --warm:#f0b357;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:14px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif}
+  header{padding:22px 26px 14px;border-bottom:1px solid var(--line);
+         position:sticky;top:0;background:rgba(11,13,16,.94);backdrop-filter:blur(8px);z-index:10}
+  h1{margin:0 0 4px;font-size:17px;font-weight:600;letter-spacing:.01em}
+  .sub{color:var(--dim);font-size:12.5px}
+  .filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{border:1px solid var(--line);background:var(--panel);color:var(--dim);
+        padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer;
+        transition:.15s}
+  .chip:hover{color:var(--ink);border-color:#37414c}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#06231a;font-weight:600}
+  main{display:grid;gap:14px;padding:20px 26px 60px;
+       grid-template-columns:repeat(auto-fill,minmax(268px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+        overflow:hidden;cursor:pointer;transition:.18s}
+  .card:hover{border-color:#3b4854;transform:translateY(-2px)}
+  .shot{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
+  .shot img{width:100%;height:100%;object-fit:cover;display:block}
+  .shot iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .badge{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.72);
+         color:#fff;font-size:10.5px;padding:2px 7px;border-radius:4px;
+         display:flex;align-items:center;gap:5px}
+  .dot{width:6px;height:6px;border-radius:50%;background:#ff4b4b}
+  .up{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.72);
+      font-size:10.5px;padding:2px 7px;border-radius:4px}
+  .proven{color:var(--accent)} .solid{color:var(--warm)} .recent{color:var(--dim)}
+  .meta{padding:9px 11px 11px}
+  .name{font-weight:600;font-size:13px;margin-bottom:2px}
+  .place{color:var(--dim);font-size:11.5px}
+  .tags{color:#5f6b78;font-size:10.5px;margin-top:5px;text-transform:uppercase;letter-spacing:.04em}
+  .empty{color:var(--dim);padding:40px 26px}
+</style>
+</head>
+<body>
+<header>
+  <h1>World Live Cams</h1>
+  <div class="sub" id="count"></div>
+  <div class="filters" id="filters"></div>
+</header>
+<main id="grid"></main>
+
+<script>
+const state = {continent:'all', category:'all', stability:'all'};
+let cams = [];
+
+fetch('livecams.json').then(r=>r.json()).then(d=>{
+  cams = d.cams;
+  buildFilters();
+  render();
+}).catch(()=>{
+  document.getElementById('grid').innerHTML =
+    '<div class="empty">Open this through a local server so it can read livecams.json:<br><br>' +
+    '<code>python -m http.server 8000</code> in this folder, then visit ' +
+    '<code>http://localhost:8000/preview.html</code></div>';
+});
+
+function uniq(key){ return [...new Set(cams.map(c=>c[key]))].sort(); }
+
+function buildFilters(){
+  const box = document.getElementById('filters');
+  const groups = [
+    ['continent', ['all', ...uniq('continent')]],
+    ['stability', ['all','proven','solid','recent']],
+    ['category',  ['all', ...uniq('category')]],
+  ];
+  groups.forEach(([key, vals])=>{
+    vals.forEach(v=>{
+      const b = document.createElement('button');
+      b.className = 'chip' + (state[key]===v ? ' on':'');
+      b.textContent = v === 'all' ? key : v;
+      b.onclick = ()=>{ state[key]=v; buildFilters(); render(); };
+      box.appendChild(b);
+    });
+    box.appendChild(Object.assign(document.createElement('span'),
+      {style:'width:14px'}));
+  });
+  box.replaceChildren(...box.childNodes);
+}
+
+function match(c){
+  return (state.continent==='all' || c.continent===state.continent)
+      && (state.category==='all'  || c.category===state.category)
+      && (state.stability==='all' || c.stability===state.stability);
+}
+
+function render(){
+  const list = cams.filter(match);
+  document.getElementById('count').textContent =
+    `${list.length} of ${cams.length} streams · ${new Set(list.map(c=>c.country)).size} countries · hover a card to play it`;
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  list.forEach(c=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    const days = c.uptime_days == null ? '—'
+      : c.uptime_days >= 365 ? (c.uptime_days/365).toFixed(1)+'y'
+      : Math.round(c.uptime_days)+'d';
+    card.innerHTML = `
+      <div class="shot">
+        <img loading="lazy" src="${c.live_thumb}" alt="${c.name}">
+        <div class="badge"><span class="dot"></span>${c.viewers ?? '—'}</div>
+        <div class="up ${c.stability}">${days}</div>
+      </div>
+      <div class="meta">
+        <div class="name">${c.name}</div>
+        <div class="place">${c.place}, ${c.country}</div>
+        <div class="tags">${c.category} · ${c.channel}</div>
+      </div>`;
+    const shot = card.querySelector('.shot');
+    let frame;
+    card.onmouseenter = ()=>{
+      frame = document.createElement('iframe');
+      frame.allow = 'autoplay';
+      frame.src = c.embed;
+      shot.appendChild(frame);
+    };
+    card.onmouseleave = ()=>{ if(frame){ frame.remove(); frame = null; } };
+    card.onclick = ()=> window.open(c.url,'_blank');
+    grid.appendChild(card);
+  });
+}
+
+// live thumbnails update at the source every ~30s; bust the cache to see it
+setInterval(()=>{
+  document.querySelectorAll('.shot img').forEach(img=>{
+    img.src = img.src.split('?')[0] + '?t=' + Date.now();
+  });
+}, 30000);
+</script>
+</body>
+</html>

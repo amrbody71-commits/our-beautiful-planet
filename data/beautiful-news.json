@@ -1,0 +1,224 @@
+{
+ "generated": "2026-08-14T22:15:13Z",
+ "source": "https://informationisbeautiful.net/beautifulnews/",
+ "licence": "CC BY-SA 4.0 — Information is Beautiful",
+ "count": 36,
+ "stories": [
+  {
+   "id": 1396,
+   "title": "Apple has pledged to become carbon neutral by 2030",
+   "url": "https://informationisbeautiful.net/beautifulnews/1396-apple-carbon-neutral/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1396/1396-apple-carbon-neutral.png"
+  },
+  {
+   "id": 1395,
+   "title": "Even A Small Portion of Fruit or Vegetables Every Day Can Prevent Diabetes",
+   "url": "https://informationisbeautiful.net/beautifulnews/1395-fruit-veg-diabetes/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1395/1395-fruit-veg-diabetes.png"
+  },
+  {
+   "id": 1383,
+   "title": "A Wall Of Fertile Land Will Cross Africa",
+   "url": "https://informationisbeautiful.net/beautifulnews/1383-great-green-wall/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1383/1383-great-green-wall.png"
+  },
+  {
+   "id": 1382,
+   "title": "Diseases We've Nearly Eradicated",
+   "url": "https://informationisbeautiful.net/beautifulnews/1382-disease-eradication/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1382/1382-disease-eradication.png"
+  },
+  {
+   "id": 1381,
+   "title": "The USA Is Ripe for Wind Power",
+   "url": "https://informationisbeautiful.net/beautifulnews/1381-usa-wind-power/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1381/1381-usa-wind-power.png"
+  },
+  {
+   "id": 1380,
+   "title": "The American People Are Very Generous part II",
+   "url": "https://informationisbeautiful.net/beautifulnews/1380-americans-generous/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1380/1380-americans-generous.png"
+  },
+  {
+   "id": 1372,
+   "title": "Russia's child mortality is down, life expectancy is up",
+   "url": "https://informationisbeautiful.net/beautifulnews/1372-russia-mortality-down/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1372/1372-russia-mortality-down.png"
+  },
+  {
+   "id": 1371,
+   "title": "Way More UK Smokers Are Quitting, Due to Coronavirus",
+   "url": "https://informationisbeautiful.net/beautifulnews/1371-smokers-are-quitting/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1371/1371-smokers-are-quitting.png"
+  },
+  {
+   "id": 1364,
+   "title": "These Cities are Leading the World's Bike-Sharing Revolution",
+   "url": "https://informationisbeautiful.net/beautifulnews/1364-bikeshare-cities/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1364/1364-bikeshare-cities.png"
+  },
+  {
+   "id": 1363,
+   "title": "Things Going Down! Down! Down!",
+   "url": "https://informationisbeautiful.net/beautifulnews/1363-down-down-down/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1363/1363-down-down-down.png"
+  },
+  {
+   "id": 1362,
+   "title": "Things Going Up! Up! Up!",
+   "url": "https://informationisbeautiful.net/beautifulnews/1362-up-up-up/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1362/1362-up-up-up.png"
+  },
+  {
+   "id": 1361,
+   "title": "Blood donors In Sweden, Canada & the UK receive a text when their blood is used",
+   "url": "https://informationisbeautiful.net/beautifulnews/1361-blood-donor-text/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1361/1361-blood-donor-text.png"
+  },
+  {
+   "id": 1360,
+   "title": "Bhutan is the World's First Carbon-Negative Country",
+   "url": "https://informationisbeautiful.net/beautifulnews/1360-bhutan-carbon-negative/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1360/1360-bhutan-carbon-negative.png"
+  },
+  {
+   "id": 1359,
+   "title": "75% of all the aluminium ever used in the USA has been recycled",
+   "url": "https://informationisbeautiful.net/beautifulnews/1359-aluminium-recycling/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1359/1359-aluminium-recycling.png"
+  },
+  {
+   "id": 1357,
+   "title": "A new record for the largest ocean cleanup in history!",
+   "url": "https://informationisbeautiful.net/beautifulnews/1357-record-ocean-cleanup/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1357/1357-record-ocean-cleanup.png"
+  },
+  {
+   "id": 1356,
+   "title": "Government Buildings & Infrastructure in Three Major Australian Cities Are Now Powered by 100% Renewable Energy",
+   "url": "https://informationisbeautiful.net/beautifulnews/1356-australia-renewable-cities/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1356/1356-australia-renewable-cities.png"
+  },
+  {
+   "id": 1346,
+   "title": "We Could Soon Be Wearing Artificial Spider Silk Clothes",
+   "url": "https://informationisbeautiful.net/beautifulnews/1346-biofabrication-leaps/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1346/1346-biofabrication-leaps.png"
+  },
+  {
+   "id": 1345,
+   "title": "Children In Pre-School Programs Stay In Education Longer, Earn Higher Incomes",
+   "url": "https://informationisbeautiful.net/beautifulnews/1345-head-start-works/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1345/1345-head-start-works.png"
+  },
+  {
+   "id": 1343,
+   "title": "Combining Solar Panel Technologies Could Boost Energy Production by a Third",
+   "url": "https://informationisbeautiful.net/beautifulnews/1343-super-solar-panels/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1343/1343-super-solar-panels.png"
+  },
+  {
+   "id": 1341,
+   "title": "Million of Lives Have Been Saved by Coronavirus Lockdown Protocols",
+   "url": "https://informationisbeautiful.net/beautifulnews/1341-lockdown-lives-saved/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1341/1341-lockdown-lives-saved.png"
+  },
+  {
+   "id": 1340,
+   "title": "One Million UK Women Now Work In Science, Tech, Engineering & Math",
+   "url": "https://informationisbeautiful.net/beautifulnews/1340-million-women-stem/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1340/1340-million-women-stem.png"
+  },
+  {
+   "id": 1339,
+   "title": "Land Preservation is Happening",
+   "url": "https://informationisbeautiful.net/beautifulnews/1339-land-preservation/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1339/1339-land-preservation.png"
+  },
+  {
+   "id": 1338,
+   "title": "Finland has Almost Eradicated Vaping",
+   "url": "https://informationisbeautiful.net/beautifulnews/1338-finland-vaping/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1338/1338-finland-vaping.png"
+  },
+  {
+   "id": 1336,
+   "title": "Supercapacitor Buses Are A Thing Now",
+   "url": "https://informationisbeautiful.net/beautifulnews/1336-electric-buses/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1336/1336-electric-buses.png"
+  },
+  {
+   "id": 1335,
+   "title": "Money Spent on Disadvantaged Kids is a Great Long-term Investment",
+   "url": "https://informationisbeautiful.net/beautifulnews/1335-childhood-programs/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1335/1335-childhood-programs.png"
+  },
+  {
+   "id": 1334,
+   "title": "New Plant-based Plastic Bottles Will Degrade In One Year",
+   "url": "https://informationisbeautiful.net/beautifulnews/1334-plant-based-plastic-bottle/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1334/1334-plant-based-plastic-bottle.png"
+  },
+  {
+   "id": 1332,
+   "title": "Female Youth Literacy is Up, Up, Up",
+   "url": "https://informationisbeautiful.net/beautifulnews/1332-female-youth-literacy/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1332/1332-female-youth-literacy.png"
+  },
+  {
+   "id": 1331,
+   "title": "The Gender Gap in Primary Schools Has Disappeared",
+   "url": "https://informationisbeautiful.net/beautifulnews/1331-gender-gap-primary/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1331/1331-gender-gap-primary.png"
+  },
+  {
+   "id": 1330,
+   "title": "More Girls Are Enrolling in Secondary School Worldwide",
+   "url": "https://informationisbeautiful.net/beautifulnews/1330-girls-in-school/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1330/1330-girls-in-school.png"
+  },
+  {
+   "id": 1329,
+   "title": "The Number of Girls Out of School Worldwide Has Dropped by 75%",
+   "url": "https://informationisbeautiful.net/beautifulnews/1329-girls-out-of-school/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1329/1329-girls-out-of-school.png"
+  },
+  {
+   "id": 1325,
+   "title": "Female Football Teams In England Doubled In Three Years",
+   "url": "https://informationisbeautiful.net/beautifulnews/1325-women-in-football/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1325/1325-women-in-football.png"
+  },
+  {
+   "id": 1323,
+   "title": "There Have Never Been More Female CEOs",
+   "url": "https://informationisbeautiful.net/beautifulnews/1323-female-ceos/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1323/1323-female-ceos.png"
+  },
+  {
+   "id": 1322,
+   "title": "Argentina Will Be the First Major Latin American Country to Legalize Abortion",
+   "url": "https://informationisbeautiful.net/beautifulnews/1322-abortion-legal-argentina/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1322/1322-abortion-legal-argentina.png"
+  },
+  {
+   "id": 1321,
+   "title": "After 23 Months, the 2018 Ebola Outbreak in DR Congo Has Ended",
+   "url": "https://informationisbeautiful.net/beautifulnews/1321-ebola-congo/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1321/1321-ebola-congo.png"
+  },
+  {
+   "id": 1320,
+   "title": "Rhino Populations Are Growing",
+   "url": "https://informationisbeautiful.net/beautifulnews/1320-rhino-populations/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1320/1320-rhino-populations.png"
+  },
+  {
+   "id": 1319,
+   "title": "A New *Inflatable Electric Scooter* Might Improve Urban Mobility",
+   "url": "https://informationisbeautiful.net/beautifulnews/1319-inflatable-scooter/",
+   "image": "https://s3.amazonaws.com/infobeautiful-bnews/images/1319/1319-inflatable-scooter.png"
+  }
+ ]
+}

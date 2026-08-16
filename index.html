@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Beautiful Planet — live cameras, right now</title>
+<meta name="description" content="A spinning Earth of live webcams. Hover a pin to see what is happening there right now.">
+<meta name="theme-color" content="#070b12">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://i.ytimg.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&family=Italianno&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:     #070b12;  /* deep blue-black void — never pure black */
+    --slate:   #101a26;  /* panel grounds, monitor chrome */
+    --line:    #1e2a38;  /* hairlines */
+    --bone:    #e8e3d8;  /* primary type */
+    --dim:     #7d8b99;  /* secondary type */
+    --tally:   #ff8c42;  /* live signal, night-side glow, active pin */
+    --glacier: #a8c8d8;  /* day-side land, cool readouts */
+    --signal:  #ff3ea8;  /* the cameras. A hue no terrain or daylight produces */
+    --sig:     #ff3b30;  /* the recording dot. used once, nowhere else */
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ height:100%; overflow:hidden; }
+  body{
+    background:var(--ink);
+    color:var(--bone);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---- the z-stack that makes the planet eclipse the title ----------
+     0 stars (2D canvas)  1 title  2 globe (transparent WebGL)  3 chrome
+     The WebGL canvas paints nothing but the globe, so the title reads
+     through everywhere the planet is not.                             */
+  #stars, #scene{ position:fixed; inset:0; width:100%; height:100%; display:block; }
+  #stars{ z-index:0; }
+  #title{ z-index:1; }
+  #scene{ z-index:2; touch-action:none; cursor:grab; }
+  #scene.dragging{ cursor:grabbing; }
+  .chrome{ z-index:3; position:fixed; pointer-events:none; }
+
+  /* ---- title ------------------------------------------------------- */
+  #title{
+    position:fixed; left:0; right:0; top:20vh;
+    text-align:center; pointer-events:none;
+    font-family:'Archivo', system-ui, sans-serif;
+    font-variation-settings:'wdth' 125, 'wght' 800;
+    /* Measured, not guessed: "OUR BEAUTIFUL PLANET" in Archivo at wdth 125
+       runs 16.07em, so the type size that fits 94% of the viewport is
+       0.94 / 16.07 = 5.85vw. Anything larger clips the O and the T. */
+    font-size:clamp(1.25rem, 5.7vw, 6.4rem);
+    line-height:.92;
+    letter-spacing:-.005em;
+    white-space:nowrap;
+    color:var(--bone);
+    opacity:.93;
+  }
+  #title .sub{
+    display:block;
+    margin-top:1.1em;
+    font-family:'IBM Plex Mono', monospace;
+    font-variation-settings:normal;
+    font-size:clamp(.6rem, 1.05vw, .78rem);
+    font-weight:400;
+    letter-spacing:.34em;
+    text-indent:.34em;
+    color:var(--dim);
+    opacity:.75;
+  }
+
+  /* ---- the monitor -------------------------------------------------
+     Docked, not floating. A preview that chases the pin across a
+     spinning globe never settles and never lets the eye learn where to
+     look; a fixed dock plus a leader line keeps the connection explicit
+     while the picture stays still. */
+  #leader{ position:fixed; inset:0; z-index:3; pointer-events:none; }
+  #leader line{ stroke:var(--signal); stroke-width:1; opacity:.55; }
+  #leader circle{ fill:none; stroke:var(--signal); stroke-width:1; opacity:.85; }
+
+  #monitor{
+    position:fixed; z-index:4; right:22px; top:50%;
+    /* Big enough to actually watch something, not just identify it. */
+    width:min(560px, 40vw);
+    transform:translateY(-50%) translateX(14px);
+    background:rgba(16,26,38,.92);
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    opacity:0; visibility:hidden;
+    pointer-events:none;
+    backdrop-filter:blur(10px);
+    transition:opacity .18s ease, transform .18s ease, visibility .18s;
+  }
+  #monitor.on{ opacity:1; visibility:visible; transform:translateY(-50%) translateX(0); pointer-events:auto; }
+
+  #monitor .screen{
+    position:relative; aspect-ratio:16/9; background:#05090f;
+    display:block; overflow:hidden;
+  }
+  #monitor .screen iframe{
+    position:absolute; inset:0; width:100%; height:100%;
+    border:0; display:block;
+    opacity:0; transition:opacity .3s ease;
+    /* The player must never see the pointer, or it draws its title bar,
+       share row and "More videos" over the picture. */
+    pointer-events:none;
+  }
+  #monitor .screen{ cursor:pointer; }
+  #monitor .screen iframe.up{ opacity:1; }
+
+  #monitor .tally{
+    position:absolute; left:8px; top:8px; z-index:2;
+    display:flex; align-items:center; gap:6px;
+    background:rgba(0,0,0,.66); padding:3px 8px; border-radius:4px;
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--bone);
+    letter-spacing:.06em;
+  }
+  #monitor .dot{
+    width:6px; height:6px; border-radius:50%; background:var(--sig);
+    animation:breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe{ 0%,100%{ opacity:1 } 50%{ opacity:.35 } }
+
+  #monitor .body{ padding:13px 15px 15px; }
+  #monitor .name{
+    font-family:'Archivo', sans-serif;
+    font-variation-settings:'wdth' 112, 'wght' 700;
+    font-size:17px; line-height:1.15; margin-bottom:4px;
+  }
+  #monitor .where{ font-size:13px; color:var(--dim); margin-bottom:10px; }
+  #monitor dl{
+    display:grid; grid-template-columns:auto 1fr; gap:3px 10px;
+    font-family:'IBM Plex Mono', monospace; font-size:11px;
+    border-top:1px solid var(--line); padding-top:10px;
+  }
+  #monitor dt{ color:#5f6b78; letter-spacing:.05em; }
+  #monitor dd{ color:var(--glacier); text-align:right; }
+  #monitor dd.warm{ color:var(--tally); }
+  #monitor .go{
+    display:block; width:100%; margin-top:11px; padding:8px;
+    background:transparent; border:1px solid var(--tally); border-radius:4px;
+    color:var(--tally); font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; letter-spacing:.12em; cursor:pointer; text-align:center;
+    text-decoration:none; transition:background .15s ease, color .15s ease;
+  }
+  #monitor .go:hover, #monitor .go:focus-visible{ background:var(--tally); color:#0b0704; }
+
+  /* Below this the dock would sit on top of the planet, so it becomes a
+     sheet along the bottom instead. */
+  @media (max-width: 860px){
+    #monitor{
+      right:12px; left:12px; top:auto; bottom:12px; width:auto;
+      transform:translateY(14px);
+      display:grid; grid-template-columns:132px 1fr;
+    }
+    #monitor.on{ transform:translateY(0); }
+    #leader{ display:none; }
+  }
+
+  /* ---- chrome ------------------------------------------------------ */
+  /* The clock is the page's opening statement — one instant, shared by
+     every camera on the globe — so it leads, centred above the title.
+     The inventory is a footnote by comparison and sits at the foot. */
+  #clock{
+    top:26px; left:0; right:0; text-align:center;
+    display:flex; align-items:baseline; justify-content:center; gap:10px;
+  }
+  #hud-utc{
+    font-family:'Archivo', sans-serif;
+    font-variation-settings:'wdth' 125, 'wght' 700;
+    font-size:clamp(22px, 2.5vw, 34px); line-height:1;
+    color:#fff; letter-spacing:.02em;
+    /* tabular figures so the seconds do not shuffle the layout */
+    font-variant-numeric:tabular-nums;
+  }
+  #clock em{
+    font-style:normal; font-family:'IBM Plex Mono', monospace;
+    font-size:10px; letter-spacing:.28em; color:var(--dim);
+  }
+
+  #tally-count{
+    bottom:24px; left:0; right:0; text-align:center;
+    font-family:'Archivo', sans-serif;
+    font-variation-settings:'wdth' 112, 'wght' 500;
+    font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--dim);
+  }
+  #tally-count b{
+    font-variation-settings:'wdth' 125, 'wght' 800;
+    font-size:15px; color:var(--bone); font-weight:400;
+  }
+  #tally-count .stale{ color:var(--tally); }
+
+  /* An actual signature, hand-written rather than typeset — the one warm,
+     human mark on a page of instrument readouts, which is exactly what a
+     signature is. Italianno is loaded for this alone; asking any of the
+     page's other faces for italics would only get a synthesised slant,
+     since none of them ship a true italic here. */
+  #credit{
+    right:26px; bottom:20px; text-align:right;
+    display:flex; flex-direction:column; align-items:flex-end; gap:1px;
+  }
+  #credit span{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:8.5px; letter-spacing:.2em; text-transform:uppercase;
+    color:#55616e;
+  }
+  #credit b{
+    font-family:'Italianno', 'Segoe Script', cursive;
+    font-weight:400;
+    /* Script faces sit small on the em, so this needs real size to read
+       at the weight of a signed name. */
+    font-size:30px; line-height:.95;
+    color:#fff;
+    letter-spacing:.01em;
+  }
+
+  /* The bottom sheet owns this corner on a phone. */
+  @media (max-width: 860px){ #credit{ display:none; } }
+
+  /* ---- Beautiful News rail -----------------------------------------
+     Drifts upward on the opposite edge from the monitor, so the planet
+     sits between the world as it is and the world getting better. */
+  #news{
+    left:22px; top:96px; bottom:20px; width:172px;
+    display:flex; flex-direction:column; pointer-events:auto;
+  }
+  .news-head{
+    font-family:'Archivo', sans-serif;
+    font-variation-settings:'wdth' 112, 'wght' 700;
+    font-size:12px; color:var(--bone); text-decoration:none;
+    border-left:2px solid var(--tally); padding-left:9px; margin-bottom:10px;
+    opacity:1; transition:opacity .18s ease;
+  }
+  .news-head:hover, .news-head:focus-visible{ opacity:1; }
+
+  .news-window{
+    flex:1; overflow:hidden; position:relative;
+    /* fade the ends so cards enter and leave rather than being clipped */
+    -webkit-mask-image:linear-gradient(to bottom, transparent, #000 4%, #000 96%, transparent);
+    mask-image:linear-gradient(to bottom, transparent, #000 4%, #000 96%, transparent);
+  }
+  .news-track{
+    display:flex; flex-direction:column; gap:12px;
+    animation:drift 240s linear infinite;
+    will-change:transform;
+  }
+  /* Exactly half: the list is rendered twice, so at -50% the second copy
+     sits where the first began and the restart is invisible. */
+  @keyframes drift{ from{ transform:translateY(0) } to{ transform:translateY(-50%) } }
+  #news:hover .news-track,
+  #news:focus-within .news-track{ animation-play-state:paused; }
+
+  .news-card{ display:block; text-decoration:none; opacity:.92; transition:opacity .18s ease; }
+  .news-card:hover, .news-card:focus-visible{ opacity:1; }
+  /* The shift lives on the child: translating the hover target itself
+     moved it off the cursor at the card's left edge, un-hovering it. */
+  .news-card:hover img, .news-card:focus-visible img{ transform:translateX(2px); }
+  .news-card img{
+    width:100%; display:block; border-radius:4px;
+    border:1px solid #2a3846; background:var(--slate);
+    transition:transform .18s ease;
+    /* The charts are dark artwork on a dark page, so they were sinking
+       into the background. A little lift separates them from the void. */
+    filter:brightness(1.16) saturate(1.08);
+  }
+  .news-cap{
+    display:block; margin-top:5px; font-size:10.5px; line-height:1.35;
+    color:#a9b6c3;
+  }
+  .news-foot{
+    margin-top:10px; font-family:'IBM Plex Mono', monospace;
+    font-size:8.5px; letter-spacing:.04em; color:#7a8794; line-height:1.5;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .news-track{ animation:none; }
+    .news-window{ overflow-y:auto; }
+  }
+  /* Hovering a card opens the chart at a size you can actually read, so
+     the rail is browsable without leaving the page. It pops out beside the
+     rail rather than over it, and the drift is already paused on hover so
+     the thing you are reading stays still. */
+  #news-zoom{
+    left:206px; width:min(470px, 38vw); z-index:6;
+    margin:0; padding:10px; pointer-events:none;
+    background:rgba(11,18,27,.96);
+    border:1px solid #2a3846; border-radius:8px;
+    box-shadow:0 18px 50px rgba(0,0,0,.6);
+    backdrop-filter:blur(10px);
+    opacity:0; transform:translateX(-8px);
+    transition:opacity .16s ease, transform .16s ease;
+  }
+  #news-zoom.on{ opacity:1; transform:translateX(0); }
+  #news-zoom img{
+    display:block; width:100%; max-height:76vh; object-fit:contain;
+    border-radius:4px; background:var(--slate);
+  }
+  #news-zoom figcaption{
+    margin-top:9px; font-size:12px; line-height:1.4; color:var(--bone);
+  }
+  #news-zoom figcaption span{
+    display:block; margin-top:5px;
+    font-family:'IBM Plex Mono', monospace; font-size:9px;
+    letter-spacing:.08em; color:#7a8794;
+  }
+
+  /* No room beside the planet on a phone; the monitor becomes a sheet
+     there and the rail would cover the globe. */
+  @media (max-width: 860px){ #news{ display:none; } #news-zoom{ display:none; } }
+
+  /* ---- loader ------------------------------------------------------ */
+  #loader{
+    position:fixed; inset:0; z-index:9;
+    display:grid; place-items:center;
+    background:var(--ink);
+    transition:opacity .6s ease, visibility .6s;
+  }
+  #loader.done{ opacity:0; visibility:hidden; }
+  #loader .mark{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem; letter-spacing:.3em; color:var(--dim);
+  }
+  #loader .mark::after{
+    content:''; display:inline-block; width:1ch;
+    animation:blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink{ 0%,50%{ content:'_'; opacity:1 } 51%,100%{ opacity:0 } }
+  .boot-err{
+    max-width:36em; padding:2em; line-height:1.7; color:var(--bone);
+    font-size:.9rem; text-align:center;
+  }
+
+  /* ---- no-js ------------------------------------------------------- */
+  .fallback{
+    position:relative; z-index:5;
+    max-width:38em; margin:0 auto; padding:14vh 24px; line-height:1.8;
+  }
+  .fallback h1{
+    font-family:'Archivo', sans-serif;
+    font-variation-settings:'wdth' 125, 'wght' 800;
+    font-size:2rem; margin-bottom:.6em;
+  }
+  .fallback p{ color:var(--dim); }
+
+  @media (prefers-reduced-motion: reduce){
+    #loader .mark::after{ animation:none; }
+  }
+</style>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+  "topojson-client": "https://cdn.jsdelivr.net/npm/topojson-client@3/+esm"
+}}
+</script>
+</head>
+<body>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<h1 id="title">OUR BEAUTIFUL PLANET<span class="sub">LIVE CAMERAS · RIGHT NOW</span></h1>
+
+<canvas id="scene" aria-label="Interactive globe of live webcams. Drag to spin."></canvas>
+
+<svg id="leader" aria-hidden="true"><line x1="0" y1="0" x2="0" y2="0"/><circle cx="0" cy="0" r="0"/></svg>
+
+<aside id="monitor" aria-live="polite">
+  <div class="screen" id="mon-screen" role="link" tabindex="0" aria-label="Open this stream on YouTube">
+    <div class="tally"><span class="dot"></span><span id="mon-viewers">LIVE</span></div>
+  </div>
+  <div class="body">
+    <div class="name" id="mon-name"></div>
+    <div class="where" id="mon-where"></div>
+    <dl>
+      <dt>LOCAL TIME</dt><dd id="mon-local" class="warm"></dd>
+      <dt>POSITION</dt><dd id="mon-coords"></dd>
+      <dt>RUNNING</dt><dd id="mon-uptime"></dd>
+      <dt>LIGHT</dt><dd id="mon-light" class="warm"></dd>
+    </dl>
+    <a class="go" id="mon-go" href="#" target="_blank" rel="noopener">WATCH ON YOUTUBE</a>
+  </div>
+</aside>
+
+<div class="chrome" id="clock"><span id="hud-utc">--:--:--</span><em>UTC</em></div>
+<div class="chrome" id="tally-count"><b id="hud-count">—</b> <span id="hud-where"></span></div>
+<div class="chrome" id="credit"><span>Made by</span><b>Abdelrahman Shaaban</b></div>
+
+<aside class="chrome" id="news" hidden>
+  <a class="news-head" href="https://informationisbeautiful.net/beautifulnews/" target="_blank" rel="noopener">
+    Beautiful News <span aria-hidden="true">&#8599;</span>
+  </a>
+  <div class="news-window"><div class="news-track"></div></div>
+  <div class="news-foot">A project by Information is Beautiful &#183; CC BY-SA 4.0</div>
+</aside>
+
+<figure class="chrome" id="news-zoom" hidden>
+  <img id="news-zoom-img" alt="">
+  <figcaption id="news-zoom-cap"></figcaption>
+</figure>
+
+<div id="loader"><div class="mark">ACQUIRING SIGNAL</div></div>
+
+<noscript>
+  <div class="fallback">
+    <h1>Our Beautiful Planet</h1>
+    <p>A spinning Earth carrying hundreds of live cameras — hover one and you see
+    what is happening there right now. The living version needs JavaScript and
+    WebGL. The camera list itself is plain data: open
+    <code>livecams.json</code> in this folder.</p>
+  </div>
+</noscript>
+
+<script type="module" src="./js/boot.js"></script>
+</body>
+</html>
